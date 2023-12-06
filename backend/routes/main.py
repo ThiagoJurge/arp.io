@@ -6,7 +6,3 @@ main_blueprint = Blueprint('main', __name__)
 @main_blueprint.route('/<path:path>')
 def fallback(path):
     return ApiResponse.not_found("Página não encontrada")
-
-@main_blueprint.route('/')
-def home():
-    return "Bem-vindo à minha aplicação Flask!"
