@@ -11,12 +11,12 @@ class ApiResponse:
 
     @staticmethod
     def no_content():
-        return make_response('', 204)
+        return make_response({'data': 'no content'}, 204)
 
     @staticmethod
     def error(message, status=400):
-        return ApiResponse.response({"message": message}, status=status)
+        return ApiResponse.response({"message": message, "status": status}, status=status)
 
     @staticmethod
     def not_found(message, status=404):
-        return ApiResponse.response({"message": message}, status=status)
+        return ApiResponse.response({"message": message, "status": status}, status=status)

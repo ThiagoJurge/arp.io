@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=backend/app.py
+      - FLASK_RUN_HOST=0.0.0.0
+      - DATABASE_URL=mysql+pymysql://usuario:senha@db:3306/nome_do_banco
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: nome_do_banco
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: senha
+      MYSQL_ROOT_PASSWORD: senha_root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_USER: usuario
+      PMA_PASSWORD: senha
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+volumes:
+  mysql_data:

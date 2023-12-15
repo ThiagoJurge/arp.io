@@ -26,9 +26,6 @@ def login():
 @main_blueprint.route("/protected", methods=["GET"])
 @jwt_required()
 def protected():
-    # Access the identity of the current user with get_jwt_identity
+    # Access the identity of the current user witwh get_jwt_identity
     current_user = get_jwt_identity()
     return ApiResponse.success({"user": current_user})
-
-
-# eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcwMTgzOTgwMCwianRpIjoiNzBkZjNjMDMtMGMzOC00ZDMzLWEwMzQtNGVhNTY2NmJiZDU0IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3QiLCJuYmYiOjE3MDE4Mzk4MDAsImV4cCI6MTcwMTg0MDcwMH0.yJhOntmpd_YDwO0lohlGZeGwWDvNNVrxB3VoK8yQC-E

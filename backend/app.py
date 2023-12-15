@@ -9,4 +9,4 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 if __name__ == '__main__':
     app = create_app()
     app.config['SECRET_KEY'] = SECRET_KEY
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")

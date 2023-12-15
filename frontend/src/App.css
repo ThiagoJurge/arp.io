@@ -1,0 +1,27 @@
+/* Reset margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Reset font size */
+  html, body, p, h1, h2, h3, h4, h5, h6 {
+    font-size: 100%;
+  }
+  
+  /* Remove list styles */
+  ul, ol {
+    list-style: none;
+  }
+  
+  /* Reset heading margins */
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+  }
+  
+  /* Reset table styles */
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+  
