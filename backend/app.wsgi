@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '/var/www/arp.io/backend/app.py')
+sys.path.insert(0, '/var/www/arp.io/backend/')
 
 from flask_app.flask_app import create_app
 application = create_app()
