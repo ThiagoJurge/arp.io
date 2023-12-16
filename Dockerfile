@@ -16,7 +16,7 @@ ENV FLASK_APP=backend/app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 
 # Exponha a porta em que o Flask será executado
-EXPOSE 5000
+EXPOSE 81
 
 # Comando para rodar a aplicação
 CMD ["flask", "run"]
