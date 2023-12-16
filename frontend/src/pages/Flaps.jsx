@@ -19,30 +19,26 @@ function Flaps() {
 
   async function fetchData() {
     try {
-      const response = await api.get('/api/if_status', {
-        onDownloadProgress: (e) => {
-          const progress = Math.round((e.loaded * 100) / e.total);
-          setProgress(progress);
-        }
-      });
-      console.log(response.data.data)
-      setData(response.data.data)
-      setLoading(false);
+        const response = await api.get('/api/if_status', {
+            onDownloadProgress: (e) => {
+                const progress = Math.round((e.loaded * 100) / e.total);
+                setProgress(progress);
+            }
+        });
+        console.log(response.data.data)
+        setData(response.data.data)
+        setLoading(false);
+        // Chame fetchData novamente após 5 segundos
+        setTimeout(fetchData, 5000);
     } catch (error) {
-      console.log(error);
+        console.log(error);
+        // Em caso de erro, também tente novamente após 5 segundos
+        setTimeout(fetchData, 5000);
     }
-  }
+}
 
   useEffect(() => {
-    fetchData(); // Initial data fetch
-    const interval = setInterval(() => {
-      fetchData(); // Fetch data every 10 seconds
-      setCounter(10); // Reset the counter
-    }, 10000); // 10000 milliseconds = 10 seconds
-
-    return () => {
-      clearInterval(interval); // Clean up the interval when the component unmounts
-    };
+    fetchData();
   }, []);
 
   useEffect(() => {

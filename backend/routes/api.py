@@ -3,6 +3,7 @@ from utils.api_response import ApiResponse
 from scripts import ExaBGPRestarter
 from scripts.database import Database
 import subprocess
+import json
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api")
 db_trap_handler = Database("trap_handler")
@@ -28,7 +29,28 @@ def restart_exabgp():
 
 @api_blueprint.route("/if_status", methods=["GET"])
 def get_if_status():
-    return ApiResponse.success(db_trap_handler.fetch("SELECT * FROM if_status"))
+    # Carregar o mapeamento de IP para hostname
+    with open("hostnames.json", "r") as file:
+        ip_hostname_mapping = json.load(file)
+
+    # Buscar os dados do banco de dados
+    data = db_trap_handler.fetch("SELECT * FROM if_status")
+
+    # Substituir o sender_ip pelo hostname correspondente
+    for item in data:
+        sender_ip = item.get("sender_ip")
+        hostname = next(
+            (
+                entry["hostname"]
+                for entry in ip_hostname_mapping
+                if entry["ip"] == sender_ip
+            ),
+            None,
+        )
+        if hostname:
+            item["sender_ip"] = hostname
+
+    return ApiResponse.success(data)
 
 
 @api_blueprint.route("/attacks", methods=["GET"])
