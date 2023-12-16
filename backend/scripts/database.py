@@ -6,9 +6,12 @@ load_dotenv()
 
 class Database:
     def __init__(self, db_name):
-        self.host = os.environ.get("DB_HOST")
-        self.user = os.environ.get("DB_USER")
-        self.password = os.environ.get("DB_PASSWORD")
+        # self.host = os.environ.get("DB_HOST")
+        # self.user = os.environ.get("DB_USER")
+        # self.password = os.environ.get("DB_PASSWORD")
+        self.host = "187.16.255.78"
+        self.user = "thiagoj"
+        self.password = "DokBr4JjjA!"
         self.db = db_name
 
     def connect(self):
