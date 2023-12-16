@@ -32,7 +32,7 @@ def get_if_status():
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
     # Construir o caminho absoluto para o arquivo de mapeamento
-    json_path = os.path.join(dir_path, "hostnames.json")  # Changed to a relative path
+    json_path = os.path.join(dir_path, "../../hostnames.json")  # Changed to a relative path
 
     # Carregar o mapeamento de IP para hostname com tratamento de erro
     try:
