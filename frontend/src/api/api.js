@@ -2,7 +2,7 @@ import axios from "axios";
 //"API WITH FLASK"
 
 const api = axios.create({
-    baseURL: "http://localhost:81",
+    baseURL: "http://jarvis.altarede.com.br",
 })
 
 export default api
