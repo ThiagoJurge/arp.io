@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import api from "../api/api"
 import { Card, Progress, Table, DatePicker } from "antd"
 import { ApiOutlined } from "@ant-design/icons"
@@ -17,40 +17,29 @@ function Flaps() {
   const [initDate, setInitDate] = useState(new Date().setHours(0, 0, 0, 0))
   const [endDate, setEndDate] = useState(999999999999999)
 
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     try {
-        const response = await api.get('/api/if_status', {
-            onDownloadProgress: (e) => {
-                const progress = Math.round((e.loaded * 100) / e.total);
-                setProgress(progress);
-            }
-        });
-        console.log(response.data.data)
-        setData(response.data.data)
-        setLoading(false);
-        // Chame fetchData novamente após 5 segundos
-        setTimeout(fetchData, 5000);
+      const response = await api.get('/api/if_status', {
+        onDownloadProgress: (e) => {
+          const progress = Math.round((e.loaded * 100) / e.total);
+          setProgress(progress);
+        }
+      });
+      setData(response.data.data);
+      setLoading(false);
     } catch (error) {
-        console.log(error);
-        // Em caso de erro, também tente novamente após 5 segundos
-        setTimeout(fetchData, 5000);
+      console.error(error);
     }
-}
+    // Adjust the interval as needed
+  }, []);
+
 
   useEffect(() => {
     fetchData();
-  }, []);
+    const interval = setInterval(fetchData, 10000); // Fetch every 10 seconds
+    return () => clearInterval(interval);
+  }, [fetchData]);
 
-  useEffect(() => {
-    // Update the counter every second
-    const counterInterval = setInterval(() => {
-      setCounter((prevCounter) => prevCounter - 1);
-    }, 1000);
-
-    return () => {
-      clearInterval(counterInterval); // Clean up the counter interval
-    };
-  }, []);
 
   function convertData(date) {
     const dataconverted = new Date(date).getTime()
@@ -181,7 +170,8 @@ function Flaps() {
       />
       </div>}
     >
-      <Table dataSource={data} columns={columns} loading={loading} />
+      <Table dataSource={data} columns={columns} loading={loading} scroll={{ x: 'max-content' }} />
+
     </Card>
   )
 }
