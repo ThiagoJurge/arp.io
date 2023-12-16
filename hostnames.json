@@ -87,7 +87,10 @@
         "ip": "10.22.0.24",
         "hostname": "ARC-GUAPI_1.1"
     },
-    null,
+    {
+        "ip": "10.22.0.25",
+        "hostname": "ARC-MGE_1.1"
+    },
     {
         "ip": "10.22.0.26",
         "hostname": "ARC-TRL_1.1"

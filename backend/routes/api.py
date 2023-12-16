@@ -32,21 +32,43 @@ def get_if_status():
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
     # Construir o caminho absoluto para o arquivo de mapeamento
-    json_path = os.path.join(dir_path, '/var/www/arp.io/hostnames.json')
+    json_path = os.path.join(dir_path, "hostnames.json")  # Changed to a relative path
 
-    # Carregar o mapeamento de IP para hostname
-    with open(json_path, 'r') as file:
-        ip_hostname_mapping = json.load(file)
+    # Carregar o mapeamento de IP para hostname com tratamento de erro
+    try:
+        with open(json_path, "r") as file:
+            ip_hostname_mapping = json.load(file)
+            if not isinstance(
+                ip_hostname_mapping, list
+            ):  # Check if the loaded data is a list
+                raise ValueError("JSON file does not contain a list")
+    except FileNotFoundError:
+        return ApiResponse.error("hostnames.json file not found.")
+    except json.JSONDecodeError:
+        return ApiResponse.error("JSON decoding error.")
+    except ValueError as ve:
+        return ApiResponse.error(str(ve))
+
+    # Verificar se o mapeamento está vazio
+    if not ip_hostname_mapping:
+        return ApiResponse.error("IP to hostname mapping is empty.")
 
     # Buscar os dados do banco de dados
     data = db_trap_handler.fetch("SELECT * FROM if_status")
 
     # Substituir o sender_ip pelo hostname correspondente
     for item in data:
-        sender_ip = item.get('sender_ip')
-        hostname = next((entry['hostname'] for entry in ip_hostname_mapping if entry['ip'] == sender_ip), None)
+        sender_ip = item.get("sender_ip")
+        hostname = next(
+            (
+                entry["hostname"]
+                for entry in ip_hostname_mapping
+                if entry["ip"] == sender_ip
+            ),
+            None,
+        )
         if hostname:
-            item['sender_ip'] = hostname
+            item["sender_ip"] = hostname
 
     return ApiResponse.success(data)
 
