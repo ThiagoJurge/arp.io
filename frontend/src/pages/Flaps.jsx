@@ -25,12 +25,11 @@ function Flaps() {
           setProgress(progress);
         }
       });
+      console.log(response.data.data)
       setData(response.data.data)
       setLoading(false);
     } catch (error) {
       console.log(error);
-    } finally {
-      console.log(data)
     }
   }
 
@@ -84,9 +83,9 @@ function Flaps() {
     const result = [];
 
     for (const item of arr) {
-      if (!uniqueIPs.has(item.ip)) {
-        uniqueIPs.add(item.ip);
-        result.push({ text: item.ip, value: item.ip });
+      if (!uniqueIPs.has(item.sender_ip)) {
+        uniqueIPs.add(item.sender_ip);
+        result.push({ text: item.sender_ip, value: item.sender_ip });
       }
     }
 
@@ -108,7 +107,7 @@ function Flaps() {
       "key": "sender_ip",
       "dataIndex": "sender_ip",
       render: (ip) => <a href={`telnet://${ip}`}>{ip} <ApiOutlined /></a>,
-      onFilter: (value, record) => record.ip.startsWith(value),
+      onFilter: (value, record) => record.sender_ip.startsWith(value),
       filterSearch: true,
       filters:
         getUniqueIPs(data)
@@ -186,7 +185,7 @@ function Flaps() {
       />
       </div>}
     >
-      <Table dataSource={filteredData} columns={columns} loading={loading} />
+      <Table dataSource={data} columns={columns} loading={loading} />
     </Card>
   )
 }
