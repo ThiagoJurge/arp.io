@@ -2,8 +2,7 @@ from flask import Blueprint, jsonify, request
 from utils.api_response import ApiResponse
 from scripts import ExaBGPRestarter
 from scripts.database import Database
-import subprocess
-import json
+import subprocess, json, os
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api")
 db_trap_handler = Database("trap_handler")
@@ -29,8 +28,14 @@ def restart_exabgp():
 
 @api_blueprint.route("/if_status", methods=["GET"])
 def get_if_status():
+    # Determinar o diretório do script atual
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+
+    # Construir o caminho absoluto para o arquivo de mapeamento
+    json_path = os.path.join(dir_path, '../../hostnames.json')
+
     # Carregar o mapeamento de IP para hostname
-    with open("hostnames.json", "r") as file:
+    with open(json_path, 'r') as file:
         ip_hostname_mapping = json.load(file)
 
     # Buscar os dados do banco de dados
@@ -38,17 +43,10 @@ def get_if_status():
 
     # Substituir o sender_ip pelo hostname correspondente
     for item in data:
-        sender_ip = item.get("sender_ip")
-        hostname = next(
-            (
-                entry["hostname"]
-                for entry in ip_hostname_mapping
-                if entry["ip"] == sender_ip
-            ),
-            None,
-        )
+        sender_ip = item.get('sender_ip')
+        hostname = next((entry['hostname'] for entry in ip_hostname_mapping if entry['ip'] == sender_ip), None)
         if hostname:
-            item["sender_ip"] = hostname
+            item['sender_ip'] = hostname
 
     return ApiResponse.success(data)
 
