@@ -1,12 +1,7 @@
-from dotenv import load_dotenv
-import os
+from flask_cors import CORS
 from flask_app.flask_app import create_app
 
-load_dotenv()
-
-SECRET_KEY = os.environ.get('SECRET_KEY')
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = create_app()
-    app.config['SECRET_KEY'] = SECRET_KEY
-    app.run(debug=True, host="0.0.0.0")
+    CORS(app, resources={r"/*": {"origins": "*"}})
+    app.run(host="0.0.0.0", port=81, debug=True, use_reloader=True, threaded=True)

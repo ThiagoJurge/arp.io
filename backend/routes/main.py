@@ -1,14 +1,19 @@
-from flask import Blueprint, request, Flask
+import os
+from flask import Blueprint, request, Flask, send_from_directory
+from flask_cors import CORS
 from utils.api_response import ApiResponse
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
-app = Flask(__name__)
-main_blueprint = Blueprint("main", __name__)
+main_blueprint = Blueprint("main", __name__, static_folder="../../frontend/dist", static_url_path="/")
 
-
+@main_blueprint.route("/", defaults={"path": ""})
 @main_blueprint.route("/<path:path>")
-def fallback(path):
-    return ApiResponse.not_found("Página não encontrada")
+def serve(path):
+    print(path)
+    if path != "" and os.path.exists(main_blueprint.static_folder + "/" + path):
+        return send_from_directory("../../frontend/dist", path)
+    else:
+        return send_from_directory("../../frontend/dist", "index.html")
 
 
 @main_blueprint.route("/login", methods=["POST"])

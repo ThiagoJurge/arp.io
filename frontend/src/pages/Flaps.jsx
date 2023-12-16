@@ -19,16 +19,18 @@ function Flaps() {
 
   async function fetchData() {
     try {
-      const response = await api.get('/if_status', {
+      const response = await api.get('/api/if_status', {
         onDownloadProgress: (e) => {
           const progress = Math.round((e.loaded * 100) / e.total);
           setProgress(progress);
         }
       });
-      setData(response.data);
+      setData(response.data.data)
       setLoading(false);
     } catch (error) {
       console.log(error);
+    } finally {
+      console.log(data)
     }
   }
 
@@ -82,18 +84,15 @@ function Flaps() {
     const result = [];
 
     for (const item of arr) {
-        if (!uniqueIPs.has(item.ip)) {
-            uniqueIPs.add(item.ip);
-            result.push({ text: item.ip, value: item.ip });
-        }
+      if (!uniqueIPs.has(item.ip)) {
+        uniqueIPs.add(item.ip);
+        result.push({ text: item.ip, value: item.ip });
+      }
     }
 
     return result;
 
-}
-
-
-console.log(getUniqueIPs(data))
+  }
 
 
   const columns = [
@@ -106,64 +105,68 @@ console.log(getUniqueIPs(data))
     },
     {
       "title": "IP",
-      "key": "ip",
-      "dataIndex": "ip",
+      "key": "sender_ip",
+      "dataIndex": "sender_ip",
       render: (ip) => <a href={`telnet://${ip}`}>{ip} <ApiOutlined /></a>,
       onFilter: (value, record) => record.ip.startsWith(value),
       filterSearch: true,
-      filters: 
+      filters:
         getUniqueIPs(data)
       ,
 
     },
     {
       "title": "Horário",
-      "key": "horario",
-      "dataIndex": "horario",
+      "key": "current_time_date",
+      "dataIndex": "current_time_date",
       render: (text) => <p>{convertGMT(text)}</p>
     },
     {
       "title": "Interface",
-      "key": "interface",
-      "dataIndex": "interface"
+      "key": "if_descr",
+      "dataIndex": "if_descr"
     },
     {
       "title": "Admin Status",
-      "key": "admin_status",
-      "dataIndex": "admin_status",
-      render: (text) => <p>{text.physical_status === "down" ? <AiFillCaretDown style={{ color: 'red' }} /> : <AiFillCaretUp style={{ color: "green" }} />}</p>
+      "key": "if_admin_status",
+      "dataIndex": "if_admin_status",
+      render: (text) => <p>{text.if_admin_status === "down" ? <AiFillCaretDown style={{ color: 'red' }} /> : <AiFillCaretUp style={{ color: "green" }} />}</p>
     },
     {
       "title": "Status Físico",
-      "key": "physical_status",
-      render: (text) => <p>{text.physical_status === "down" ? <AiFillCaretDown style={{ color: 'red' }} /> : <AiFillCaretUp style={{ color: "green" }} />}</p>
+      "key": "if_oper_status",
+      render: (text) => <p>{text.if_oper_status === "down" ? <AiFillCaretDown style={{ color: 'red' }} /> : <AiFillCaretUp style={{ color: "green" }} />}</p>
     },
     {
       "title": "Descrição",
-      "key": "descricao",
-      "dataIndex": "descricao",
+      "key": "if_alias",
+      "dataIndex": "if_alias",
       filters: [
         {
           text: 'Backbone',
           value: 'BB-',
         },
         {
-          text: 'PMS',
-          value: 'PMS',
+          text: 'Trânsito',
+          value: '-T-',
         },
         {
-          text: 'Trânsito',
-          value: 'transit',
+          text: 'Cascateamento',
+          value: 'CA-',
+        },
+        {
+          text: 'Anel',
+          value: 'AN-',
         },
       ],
-      onFilter: (value, record) => record.descricao.startsWith(value),
+      onFilter: (value, record) => record.if_alias.startsWith(value),
       filterSearch: true,
       render: (text) => <p>{text != "" ? text : "NO DESCRIPTION"}</p>
     }
   ]
 
   const filteredData = data.filter(item => {
-    const horario = convertData(item.horario);
+    const horario = convertData(item.current_time_date);
     return horario >= initDate && horario <= endDate;
   });
 

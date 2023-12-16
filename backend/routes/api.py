@@ -28,10 +28,7 @@ def restart_exabgp():
 
 @api_blueprint.route("/if_status", methods=["GET"])
 def get_if_status():
-    query = "SELECT * FROM if_status"
-    data = db_trap_handler.fetch(query)
-    formatted_data = [dict(row) for row in data]
-    return ApiResponse.success(formatted_data)
+    return ApiResponse.success(db_trap_handler.fetch("SELECT * FROM if_status"))
 
 
 @api_blueprint.route("/attacks", methods=["GET"])
@@ -41,27 +38,30 @@ def get_attacks():
     )
 
 
-@api_blueprint.route("/attacks/<int:id>", methods=["PUT"])
+@api_blueprint.route("/attacks/<int:id>", methods=["POST"])
 def update_attack(id):
-    data = request.json
-    action = data.get("action")
-    bandwidth = data.get("bandwidth")
+    action = request.json.get("action")
+    bandwidth = request.json.get("bandwidth")
 
-    if bandwidth is not None:
-        db_mitigation_service.execute(
-            "UPDATE AttackMitigation SET action = %s, bandwidth = %s WHERE id = %s",
-            (action, bandwidth, id),
-        )
+    if (bandwidth is not None) and (action is not None):
+        query = f"UPDATE AttackMitigation SET action = '{action}', bandwidth = '{bandwidth}' WHERE id = {id}"
+        db_mitigation_service.execute(query)
+        return ApiResponse.success("Regra alterada com sucesso")
+    elif bandwidth is not None:
+        query = f"UPDATE AttackMitigation SET bandwidth = '{bandwidth}' WHERE id = {id}"
+        db_mitigation_service.execute(query)
+        return ApiResponse.success("Regra alterada com sucesso")
     else:
-        db_mitigation_service.execute(
-            "UPDATE AttackMitigation SET action = %s WHERE id = %s", (action, id)
-        )
-    return ApiResponse.success("Update sucessful")
+        query = f"UPDATE AttackMitigation SET action = '{action}' WHERE id = {id}"
+        db_mitigation_service.execute(query)
+        return ApiResponse.success("Regra alterada com sucesso")
 
 
 @api_blueprint.route("/asns", methods=["GET"])
 def get_asns():
-    return ApiResponse.success(db_mitigation_service.fetch("SELECT DISTINCT asn FROM AttackMitigation"))
+    return ApiResponse.success(
+        db_mitigation_service.fetch("SELECT DISTINCT asn FROM AttackMitigation")
+    )
 
 
 @api_blueprint.route("/api/attacks/search", methods=["GET"])
@@ -99,12 +99,3 @@ def execute_curl():
         return jsonify({"message": "cURL command executed successfully"})
     except subprocess.CalledProcessError as e:
         return jsonify({"error": "Internal Server Error"})
-
-
-# @api_blueprint.route("/", defaults={"path": ""})
-# @api_blueprint.route("/<path:path>")
-# def serve(path):
-#     if path != "" and path != "favicon.ico":
-#         return send_from_directory("../frontend/dist", path)
-#     else:
-#         return send_from_directory("../frontend/dist", "index.html")
